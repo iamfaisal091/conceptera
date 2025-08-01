@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>learn basics</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f4f4f9;
+      color: #333;
+    }
+
+    header {
+      background: #111;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      position: relative;
+    }
+
+    header img {
+      width: 100%;
+      max-height: 200px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    h1 {
+      margin: 10px 0;
+    }
+
+    #searchBar {
+      margin: 20px auto;
+      display: block;
+      width: 90%;
+      max-width: 400px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .read-more {
+      display: inline-block;
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #007bff;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+    }
+
+    .read-more:hover {
+      background: #0056b3;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+      z-index: 999;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 20px;
+      cursor: pointer;
+      color: #555;
+    }
+
+    .close-btn:hover {
+      color: red;
+    }
+
+    .download-btn {
+      margin-top: 20px;
+      padding: 10px 15px;
+      background: #28a745;
+      color: white;
+      text-decoration: none;
+      border-radius: 5px;
+      display: inline-block;
+    }
+
+    footer {
+      background: #222;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      margin-top: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Physics </h1>
+    <img src="https://cdn.pixabay.com/photo/2015/11/19/18/44/physics-1050729_960_720.jpg" alt="Physics Banner">
+  </header>
+
+  <input type="text" id="searchBar" placeholder="Search physics topics...">
+
+  <div class="grid" id="topicContainer">
+    <!-- Example card -->
+    <div class="card">
+      <h3>Newton's Laws of Motion</h3>
+      <p>Learn about the fundamental laws that govern how objects move.</p>
+      <a href="#" class="read-more" data-topic="Newton's Laws of Motion" data-content="Newton's three laws describe the relationship between a body and the forces acting on it.">Read More</a>
+    </div>
+
+    <div class="card">
+      <h3>Electromagnetism</h3>
+      <p>Explore the interaction between electric and magnetic fields.</p>
+      <a href="#" class="read-more" data-topic="Electromagnetism" data-content="Electromagnetism is the physics of the electromagnetic field: a field that combines electric and magnetic effects.">Read More</a>
+    </div>
+
+    <!-- Add more topics similarly -->
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content" id="modalContent">
+      <span class="close-btn" id="closeModal">&times;</span>
+      <h2 id="modalTitle">Topic Title</h2>
+      <p id="modalText">Full topic content...</p>
+      <a href="#" class="download-btn" id="downloadBtn" download>Download</a>
+    </div>
+  </div>
+
+  <footer>
+    &copy; 2025 Concept era. All rights reserved.
+  </footer>
+
+  <script>
+  const readMoreLinks = document.querySelectorAll(".read-more");
+  const modal = document.getElementById("modal");
+  const modalTitle = document.getElementById("modalTitle");
+  const modalText = document.getElementById("modalText");
+  const closeModal = document.getElementById("closeModal");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const searchBar = document.getElementById("searchBar");
+  const topicContainer = document.getElementById("topicContainer");
+  
+  readMoreLinks.forEach(link => {
+    link.addEventListener("click", function(e) {
+      e.preventDefault();
+      const title = this.dataset.topic;
+      const content = this.dataset.content;
+      modalTitle.textContent = title;
+      modalText.textContent = content;
+      
+      const blob = new Blob([`${title}\n\n${content}`], { type: "text/plain" });
+      downloadBtn.href = URL.createObjectURL(blob);
+      downloadBtn.download = `${title.replace(/\s+/g, '_')}.txt`;
+      
+      modal.style.display = "flex";
+    });
+  });
+  
+  closeModal.addEventListener("click", function() {
+    modal.style.display = "none";
+  });
+  
+  // ❌ Remove or comment this part
+  // modal.addEventListener("click", function (e) {
+  //   if (e.target === modal) {
+  //     modal.style.display = "none";
+  //   }
+  // });
+  
+  searchBar.addEventListener("input", function() {
+    const search = this.value.toLowerCase();
+    const cards = topicContainer.querySelectorAll(".card");
+    
+    cards.forEach(card => {
+      const text = card.textContent.toLowerCase();
+      card.style.display = text.includes(search) ? "block" : "none";
+    });
+  });
+</script>
+</body>
+</html>
