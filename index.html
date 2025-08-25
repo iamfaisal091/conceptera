@@ -21,16 +21,21 @@ p { margin-top: 8px; font-weight: bold; color: #555; text-align: center; word-br
 const container = document.getElementById('mediaContainer');
 
 // Detect file type
-function detectFileType(url){
-    if(url.includes('drive.google.com')) return 'drive';
-    const ext = url.split('.').pop().toLowerCase();
-    if(['jpg','jpeg','png','gif','webp'].includes(ext)) return 'image';
-    if(['mp4','webm','ogg'].includes(ext)) return 'video';
-    if(['mp3','wav','ogg'].includes(ext)) return 'audio';
-    if(['pdf'].includes(ext)) return 'pdf';
-    return 'other'
-    const embedUrl = file.url.includes('/view') ? file.url.replace('/view','/preview') : file.url;;
+    
+else if(type === 'drive'){
+    let embedUrl;
+    const match = file.url.match(/\/d\/(.*?)\//);
+    if(match){
+        const fileId = match[1];
+        embedUrl = `https://drive.google.com/file/d/${fileId}/preview`;
+    } else {
+        embedUrl = file.url;
+    }
+    const iframe = document.createElement('iframe');
+    iframe.src = embedUrl;
+    div.appendChild(iframe);
 }
+
 
 // Render gallery from JSON
 fetch('media.json')
