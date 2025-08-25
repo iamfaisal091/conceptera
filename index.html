@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic JSON Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        iframe, embed {
+            width: 100%;
+            border-radius: 8px;
+        }
+        iframe {
+            height: 400px;
+        }
+        embed {
+            height: 500px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Dynamic Content from External JSON</h1>
+        <div id="content">Loading...</div>
+    </div>
+
+    <script>
+        async function loadJSON() {
+            try {
+                // external JSON file ka path
+                const response = await fetch('data.json');
+                const data = await response.json();
+                
+                const container = document.getElementById('content');
+                container.innerHTML = ''; // loading text remove
+
+                data.forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'card';
+                    
+                    const title = document.createElement('h2');
+                    title.textContent = item.title;
+                    card.appendChild(title);
+
+                    // Type ke hisaab se content embed
+                    if(item.type === 'html' || item.type === 'iframe') {
+                        const iframe = document.createElement('iframe');
+                        iframe.src = item.url;
+                        card.appendChild(iframe);
+                    } else if(item.type === 'pdf') {
+                        const embed = document.createElement('embed');
+                        embed.src = item.url;
+                        embed.type = 'application/pdf';
+                        card.appendChild(embed);
+                    } else {
+                        card.innerHTML += `<p>Unsupported type: ${item.type}</p>`;
+                    }
+
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                document.getElementById('content').innerHTML = 'Failed to load JSON file!';
+                console.error('Error loading JSON:', error);
+            }
+        }
+
+        loadJSON();
+    </script>
+</body>
+</html>
