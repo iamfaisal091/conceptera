@@ -1,0 +1,8 @@
+{
+  "help": "Available commands: help, hello, time, about, joke",
+  "hello": "Hello! How can I help you?",
+  "time": "showTime",
+  "about": "I am a JSON file based chatbot.",
+  "joke": "Why don’t programmers like nature? Because it has too many bugs 🐞"
+  "goal": "this is your goal"
+}
