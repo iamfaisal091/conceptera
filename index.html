@@ -1,103 +1,188 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>JSON File Chatbot</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #121212;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .chatbox {
-      width: 400px;
-      background: #1e1e1e;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(255,255,255,0.1);
-    }
-    .messages {
-      height: 300px;
-      overflow-y: auto;
-      border: 1px solid #444;
-      border-radius: 8px;
-      padding: 10px;
-      margin-bottom: 10px;
-    }
-    .user { color: #4cafef; }
-    .bot { color: #9eff9e; }
-    input {
-      width: 80%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-    }
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      background: #4cafef;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover { background: #3686c9; }
-  </style>
+<meta charset="UTF-8">
+<title>Chatbot</title>
+<style>
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #ece5dd;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .chat-container {
+    width: 400px;
+    height: 600px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  }
+  .chat-header {
+    background: #075e54;
+    color: #fff;
+    padding: 12px;
+    text-align: center;
+    font-weight: bold;
+  }
+  .chat-messages {
+    flex: 1;
+    padding: 12px;
+    background: #e5ddd5;
+    overflow-y: auto;
+  }
+  .message {
+    margin: 6px 0;
+    max-width: 75%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    line-height: 1.4;
+    word-wrap: break-word;
+  }
+  .user {
+    background: #dcf8c6;
+    align-self: flex-end;
+    border-bottom-right-radius: 0;
+  }
+  .bot {
+    background: #fff;
+    align-self: flex-start;
+    border-bottom-left-radius: 0;
+  }
+  .chat-input {
+    display: flex;
+    border-top: 1px solid #ccc;
+    background: #f0f0f0;
+    padding: 8px;
+  }
+  .chat-input input {
+    flex: 1;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 14px;
+    outline: none;
+  }
+  .chat-input button {
+    margin-left: 8px;
+    background: #075e54;
+    border: none;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .chat-input button:hover {
+    background: #0b8f75;
+  }
+  img {
+    max-width: 200px;
+    border-radius: 8px;
+    margin-top: 6px;
+    cursor: pointer;
+  }
+  video {
+    max-width: 220px;
+    border-radius: 8px;
+    margin-top: 6px;
+  }
+  a {
+    color: #0645ad;
+    text-decoration: none;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+</style>
 </head>
 <body>
-  <div class="chatbox">
-    <div class="messages" id="messages"></div>
-    <input type="text" id="commandInput" placeholder="Type a command...">
-    <button onclick="sendCommand()">Send</button>
+<div class="chat-container">
+  <div class="chat-header">WhatsApp Bot</div>
+  <div class="chat-messages" id="messages"></div>
+  <div class="chat-input">
+    <input type="text" id="commandInput" placeholder="Type a message..." onkeypress="if(event.key==='Enter'){sendCommand()}">
+    <button onclick="sendCommand()">➤</button>
   </div>
+</div>
 
-  <script>
-    let commands = {};
+<script>
+let commands = {};
 
-    // 🔹 JSON file load karna
-    fetch("commands.json")
-      .then(response => response.json())
-      .then(data => {
-        commands = data;
-        console.log("Commands Loaded:", commands);
-      })
-      .catch(error => console.error("Error loading JSON:", error));
+// Load JSON commands
+fetch("commands.json")
+  .then(res => res.json())
+  .then(data => { commands = data; })
+  .catch(err => console.error("JSON load error:", err));
 
-    // 🔹 Custom functions
-    const specialFunctions = {
-      showTime: () => "Current Time is: " + new Date().toLocaleTimeString()
-    };
+const specialFunctions = {
+  showTime: () => "Current Time: " + new Date().toLocaleTimeString()
+};
 
-    function sendCommand() {
-      const input = document.getElementById("commandInput");
-      const msgBox = document.getElementById("messages");
-      const userCommand = input.value.trim().toLowerCase();
+// Load chat from sessionStorage when page opens
+window.onload = function() {
+  const saved = sessionStorage.getItem("chatHistory");
+  if(saved){
+    document.getElementById("messages").innerHTML = saved;
+  }
+  scrollBottom();
+};
 
-      if (userCommand === "") return;
+// Append message
+function appendMessage(text, type="bot") {
+  const msgBox = document.getElementById("messages");
+  const div = document.createElement("div");
+  div.classList.add("message", type);
 
-      // Show user input
-      msgBox.innerHTML += `<div class="user">User: ${userCommand}</div>`;
+  // Media / link handling
+  if (typeof text === "string" && text.match(/\.(jpeg|jpg|png|gif)$/i)) {
+    div.innerHTML = `<img src="${text}" onclick="window.open('${text}','_blank')">`;
+  } else if (typeof text === "string" && text.match(/\.(mp4|webm|ogg)$/i)) {
+    div.innerHTML = `<video controls><source src="${text}" type="video/mp4"></video>`;
+  } else if (typeof text === "string" && text.startsWith("http")) {
+    div.innerHTML = `<a href="${text}" target="_blank">${text}</a>`;
+  } else {
+    div.textContent = text;
+  }
 
-      // Check JSON command
-      if (commands[userCommand]) {
-        let response = commands[userCommand];
+  msgBox.appendChild(div);
+  scrollBottom();
+  saveChat();
+}
 
-        // Agar response ek function ka naam hai
-        if (specialFunctions[response]) {
-          response = specialFunctions[response]();
-        }
+// Auto scroll to bottom
+function scrollBottom(){
+  const msgBox = document.getElementById("messages");
+  msgBox.scrollTop = msgBox.scrollHeight;
+}
 
-        msgBox.innerHTML += `<div class="bot">Bot: ${response}</div>`;
-      } else {
-        msgBox.innerHTML += `<div class="bot">Bot: Command not found. Type 'help' for options.</div>`;
-      }
+// Save chat to sessionStorage
+function saveChat(){
+  sessionStorage.setItem("chatHistory", document.getElementById("messages").innerHTML);
+}
 
-      msgBox.scrollTop = msgBox.scrollHeight;
-      input.value = "";
-    }
-  </script>
+// Send command
+function sendCommand() {
+  const input = document.getElementById("commandInput");
+  const userCommand = input.value.trim().toLowerCase();
+  if (userCommand==="") return;
+
+  appendMessage(input.value, "user");
+
+  if (commands[userCommand]) {
+    let response = commands[userCommand];
+    if (specialFunctions[response]) response = specialFunctions[response]();
+    appendMessage(response, "bot");
+  } else {
+    appendMessage("Command not found. Type 'help' for options.", "bot");
+  }
+
+  input.value = "";
+}
+</script>
 </body>
 </html>
