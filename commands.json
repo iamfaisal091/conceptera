@@ -1,8 +1,26 @@
 {
-  "help": "Available commands: help, hello, time, about, joke, goal",
+  "help": "Available commands: help, hello, time, about, joke, secret, motivation, quote, coding, meme, photo1, photo2, photo3, video1, video2, video3, link1, link2, link3",
+  
   "hello": "Hello! How can I help you?",
   "time": "showTime",
-  "about": "I am a JSON file based chatbot.",
-  "joke": "Why don’t programmers like nature? Because it has too many bugs 🐞",
-  "goal": "this is your goal"
+  "about": "I am a WhatsApp-style chatbot with text, media and fun commands.",
+  
+  "joke": "😂 Why do Java developers wear glasses? Because they don't see sharp!",
+  "secret": "🤫 The secret to learning programming is... just keep building projects!",
+  "motivation": "💪 Keep pushing forward! Every expert was once a beginner.",
+  "quote": "✨ 'Code is like humor. When you have to explain it, it’s bad.' – Cory House",
+  "coding": "👨‍💻 Programming isn’t about typing, it’s about thinking.",
+  
+  "meme": "https://i.imgur.com/3g7nmJC.png",
+  "photo1": "https://picsum.photos/300/200?random=1",
+  "photo2": "https://picsum.photos/300/200?random=2",
+  "photo3": "https://picsum.photos/300/200?random=3",
+  
+  "video1": "https://www.w3schools.com/html/mov_bbb.mp4",
+  "video2": "https://www.w3schools.com/html/movie.mp4",
+  "video3": "https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4",
+  
+  "link1": "https://www.wikipedia.org",
+  "link2": "https://www.youtube.com",
+  "link3": "https://github.com"
 }
